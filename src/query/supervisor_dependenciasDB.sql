@@ -113,7 +113,7 @@ CREATE TABLE dbo.Supervisiones (
     CONSTRAINT FK_Supervisiones_Usuarios FOREIGN KEY (cui_supervisor) REFERENCES dbo.Usuarios (cui),
     CONSTRAINT FK_Supervisiones_Reprogramado FOREIGN KEY (id_nombramiento_reprogramado) REFERENCES dbo.Supervisiones (id_supervision),
     CONSTRAINT CK_Supervisiones_tipo_nombramiento CHECK (tipo_nombramiento IN ('CAMPO', 'ESPECIFICA')),
-    CONSTRAINT CK_Supervisiones_estado CHECK (estado IN ('PROGRAMADO', 'APROBADO', 'INICIADO', 'EJECUTADO', 'RESULTADOS', 'ACCIONES', 'INFORME', 'SEGUIMIENTO', 'CANCELADO'))
+    CONSTRAINT CK_Supervisiones_estado CHECK (estado IN ('PROGRAMADO', 'REPROGRAMADO', 'APROBADO', 'INICIADO', 'EJECUTADO', 'RESULTADOS', 'ACCIONES', 'INFORME', 'SEGUIMIENTO', 'CANCELADO'))
 );
 
 
