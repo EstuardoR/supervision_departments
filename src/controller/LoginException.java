@@ -1,3 +1,8 @@
+/*
+ * Autor: Joan Estuardo Rodas
+ * Carné: 94902514130
+ */
+
 package controller;
 
 public class LoginException extends Exception {

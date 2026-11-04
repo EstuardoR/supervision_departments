@@ -1,12 +1,52 @@
+
+/*
+ * Autor: Joan Estuardo Rodas
+ * Carné: 94902514130
+ */
+
+
+
 package dao;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import model.Usuario;
 
 public class UsuarioDAO {
+
+    /** Lista los usuarios (cui y nombre completo) que tienen el perfil indicado. */
+    public List<Usuario> listarPorPerfil(String perfil) throws SQLException {
+        List<Usuario> usuarios = new ArrayList<>();
+        Connection conn = util.clsConnection.ConnectionDB();
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer conexión con la base de datos.");
+        }
+        try {
+            String sql = "SELECT cui, nombre_completo FROM dbo.Usuarios "
+                    + "WHERE perfil = ? ORDER BY nombre_completo";
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                ps.setString(1, perfil);
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Usuario usuario = new Usuario();
+                        usuario.setCui(rs.getString("cui"));
+                        usuario.setNombreCompleto(rs.getString("nombre_completo"));
+                        usuarios.add(usuario);
+                    }
+                }
+            }
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException ignored) {
+            }
+        }
+        return usuarios;
+    }
 
     public Usuario buscarPorCui(String cui) throws SQLException {
         Connection conn = util.clsConnection.ConnectionDB();

@@ -89,7 +89,7 @@ public class frmLogin extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSalir)
                     .addComponent(btnIngresar))
-                .addContainerGap(25, Short.MAX_VALUE))
+                .addContainerGap(44, Short.MAX_VALUE))
         );
 
         pack();
@@ -104,13 +104,9 @@ public class frmLogin extends javax.swing.JFrame {
         char[] contrasena = txtContrasena.getPassword();
         try {
             controller.LoginController controlador = new controller.LoginController();
-            model.Usuario usuario = controlador.iniciarSesion(cui, contrasena);
-            javax.swing.JOptionPane.showMessageDialog(
-                    this,
-                    "Bienvenido(a), " + usuario.getNombreCompleto()
-                    + "\nPerfil: " + usuario.getPerfil(),
-                    "Inicio de sesión exitoso",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            controlador.iniciarSesion(cui, contrasena);
+            new view.frmPrincipal().setVisible(true);
+            this.dispose();
         } catch (controller.LoginException ex) {
             javax.swing.JOptionPane.showMessageDialog(
                     this,

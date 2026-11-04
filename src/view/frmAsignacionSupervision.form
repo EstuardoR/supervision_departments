@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JInternalFrameFormInfo">
+  <Properties>
+    <Property name="closable" type="boolean" value="true"/>
+    <Property name="iconifiable" type="boolean" value="true"/>
+    <Property name="maximizable" type="boolean" value="true"/>
+    <Property name="resizable" type="boolean" value="true"/>
+    <Property name="title" type="java.lang.String" value="Asignaci&#xf3;n de Supervisi&#xf3;n &#x2013; Nueva asignaci&#xf3;n"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="1"/>
+    <SyntheticProperty name="generateCenter" type="boolean" value="false"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+  </AuxValues>
+
+  <Layout>
+    <DimensionLayout dim="0">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="lblSeccionSupervisor" min="-2" max="-2" attributes="0"/>
+                  <Component id="sepSupervisor" pref="900" max="32767" attributes="0"/>
+                  <Component id="lblSeccionParametros" min="-2" max="-2" attributes="0"/>
+                  <Component id="sepParametros" pref="900" max="32767" attributes="0"/>
+                  <Component id="lblSeccionTipo" min="-2" max="-2" attributes="0"/>
+                  <Component id="sepTipo" pref="900" max="32767" attributes="0"/>
+                  <Component id="lblObservaciones" min="-2" max="-2" attributes="0"/>
+                  <Component id="scrollObservaciones" pref="900" max="32767" attributes="0"/>
+              </Group>
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+    <DimensionLayout dim="1">
+      <Group type="103" groupAlignment="0" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+              <Component id="lblSeccionSupervisor" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+              <Component id="sepSupervisor" min="-2" pref="2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+              <Component id="lblSeccionParametros" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+              <Component id="sepParametros" min="-2" pref="2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+              <Component id="lblSeccionTipo" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="8" max="-2" attributes="0"/>
+              <Component id="sepTipo" min="-2" pref="2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="12" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="20" max="-2" attributes="0"/>
+              <Component id="lblObservaciones" min="-2" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="4" max="-2" attributes="0"/>
+              <Component id="scrollObservaciones" min="-2" pref="90" max="-2" attributes="0"/>
+              <EmptySpace pref="20" max="32767" attributes="0"/>
+          </Group>
+      </Group>
+    </DimensionLayout>
+  </Layout>
+  <SubComponents>
+    <Component class="javax.swing.JLabel" name="lblSeccionSupervisor">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Datos del supervisor (autocompletados desde RRHH)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSeparator" name="sepSupervisor">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblSupervisor">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Supervisor DCI"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbSupervisor">
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="cmbSupervisorActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblDireccion">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Direcci&#xf3;n"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtDireccion">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="e6" green="e6" red="e6" type="rgb"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblUnidad">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Unidad"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtUnidad">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="e6" green="e6" red="e6" type="rgb"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblPuesto">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Puesto"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtPuesto">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="e6" green="e6" red="e6" type="rgb"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblCodigo">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="C&#xf3;digo de empleado"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="txtCodigo">
+      <Properties>
+        <Property name="editable" type="boolean" value="false"/>
+        <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+          <Color blue="e6" green="e6" red="e6" type="rgb"/>
+        </Property>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblSeccionParametros">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Par&#xe1;metros de la asignaci&#xf3;n"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSeparator" name="sepParametros">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblRegion">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Regi&#xf3;n"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbRegion">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblOrden">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Orden"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbOrden">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblFechaInicio">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fecha inicio"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="spnFechaInicio">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblFechaFin">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Fecha fin (m&#xe1;x. 5 d&#xed;as h&#xe1;biles)"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="spnFechaFin">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblAlcanceInicial">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Alcance inicial"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="spnAlcanceInicial">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblAlcanceFinal">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Alcance final"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSpinner" name="spnAlcanceFinal">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblViaticos">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Vi&#xe1;ticos"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbViaticos">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblVehiculo">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Veh&#xed;culo propio"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbVehiculo">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblSeccionTipo">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Tipo de nombramiento"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JSeparator" name="sepTipo">
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="rdoEspecifica">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="ESPEC&#xcd;FICA"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rdoEspecificaActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JRadioButton" name="rdoCampo">
+      <Properties>
+        <Property name="selected" type="boolean" value="true"/>
+        <Property name="text" type="java.lang.String" value="CAMPO"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="rdoCampoActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblDireccionAdmin">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Direcci&#xf3;n admin."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbDireccionAdmin">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblDeptoAdmin">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Depto. admin."/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbDeptoAdmin">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblDepartamento">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Departamento"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbDepartamento">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblMunicipio">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Municipio"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbMunicipio">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblOficina">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Oficina / Auxiliatura"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JComboBox" name="cmbOficina">
+    </Component>
+    <Component class="javax.swing.JLabel" name="lblObservaciones">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Observaciones"/>
+      </Properties>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="scrollObservaciones">
+      <AuxValues>
+        <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
+      </AuxValues>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Component class="javax.swing.JTextArea" name="txtObservaciones">
+          <Properties>
+            <Property name="columns" type="int" value="20"/>
+            <Property name="lineWrap" type="boolean" value="true"/>
+            <Property name="rows" type="int" value="4"/>
+            <Property name="wrapStyleWord" type="boolean" value="true"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Component class="javax.swing.JButton" name="btnCancelar">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Cancelar"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCancelarActionPerformed"/>
+      </Events>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnGuardar">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Guardar (estado PROGRAMADO)"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnGuardarActionPerformed"/>
+      </Events>
+    </Component>
+  </SubComponents>
+</Form>

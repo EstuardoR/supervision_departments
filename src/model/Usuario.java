@@ -1,3 +1,9 @@
+
+/*
+ * Autor: Joan Estuardo Rodas
+ * Carné: 94902514130
+ */
+
 package model;
 
 public class Usuario {
@@ -85,5 +91,11 @@ public class Usuario {
 
     public void setCorreoInstitucional(String correoInstitucional) {
         this.correoInstitucional = correoInstitucional;
+    }
+
+    /** Se usa para que los JComboBox que listan usuarios muestren el nombre completo. */
+    @Override
+    public String toString() {
+        return nombreCompleto;
     }
 }
