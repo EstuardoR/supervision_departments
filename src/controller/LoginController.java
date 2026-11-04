@@ -29,6 +29,8 @@ public class LoginController {
             throw new LoginException("CUI o contraseña inválidos.");
         }
 
+        util.Sesion.getInstancia().setUsuarioActual(usuario);
+
         return usuario;
     }
 }
