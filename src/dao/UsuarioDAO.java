@@ -9,7 +9,7 @@ import model.Usuario;
 public class UsuarioDAO {
 
     public Usuario buscarPorCui(String cui) throws SQLException {
-        Connection conn = util.clsConnection.ConnectionDB();
+        Connection conn = util.clsConnection.getConexion();
         if (conn == null) {
             throw new SQLException("No se pudo establecer conexión con la base de datos.");
         }
