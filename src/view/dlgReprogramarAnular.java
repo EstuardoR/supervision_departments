@@ -1,6 +1,6 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
+ * Autor: Joan Estuardo Rodas
+ * Carné: 94902514130
  */
 package view;
 
@@ -10,12 +10,91 @@ package view;
  */
 public class dlgReprogramarAnular extends javax.swing.JDialog {
 
+    private static final String SELECCIONE = "Seleccione";
+
+    /** Id de la supervisión que se está reprogramando o anulando. */
+    private final int idSupervision;
+
+    /** CUI del supervisor asignado a la supervisión (para la notificación por correo). */
+    private String cuiSupervisorAsignado;
+
+    /** Archivo elegido con el botón Adjuntar; null si no se adjuntó ninguno. */
+    private java.io.File archivoAdjunto;
+
+    /** true si se guardó el cambio; la pantalla que abre este diálogo lo consulta para refrescar su tabla. */
+    private boolean guardado;
+
+    /** true cuando la supervisión no estaba en estado PROGRAMADO: el diálogo no debe llegar a mostrarse. */
+    private boolean estadoInvalido;
+
     /**
-     * Creates new form dlgReprogramarAnular
+     * Creates new form dlgReprogramarAnular. Recibe la ventana que lo abre y
+     * el id de la supervisión a reprogramar/anular.
      */
-    public dlgReprogramarAnular(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
+    public dlgReprogramarAnular(java.awt.Frame parent, int idSupervision) {
+        super(parent, true);
+        this.idSupervision = idSupervision;
         initComponents();
+        cargarMotivos();
+        cargarFaseActual();
+        setLocationRelativeTo(parent);
+    }
+
+    /** Indica si el diálogo terminó guardando un cambio (para que quien lo abrió refresque su tabla). */
+    public boolean isGuardado() {
+        return guardado;
+    }
+
+    /** Llena el combo de motivos con la lista fija pedida, dejando "Seleccione" como primera opción. */
+    private void cargarMotivos() {
+        cmbMotivo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[]{
+            SELECCIONE, "JUNTA", "VEHICULO", "SEMANAS DESPUES", "VIATICOS",
+            "LICENCIA SINDICAL", "VACACIONES", "OTRAS"
+        }));
+    }
+
+    /**
+     * Trae la supervisión y muestra su estado actual. Si no está en
+     * PROGRAMADO, avisa y marca el diálogo para que no llegue a mostrarse.
+     */
+    private void cargarFaseActual() {
+        try {
+            model.Supervision s = new controller.ReprogramarAnularController().obtenerSupervision(idSupervision);
+            if (s == null || !"PROGRAMADO".equals(s.getEstado())) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Solo se puede reprogramar o anular una supervisión en estado PROGRAMADO",
+                        "Operación no permitida", javax.swing.JOptionPane.WARNING_MESSAGE);
+                estadoInvalido = true;
+                return;
+            }
+            cuiSupervisorAsignado = s.getCuiSupervisor();
+            lblFase.setText(s.getEstado());
+        } catch (controller.ReprogramarAnularException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(), "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+            estadoInvalido = true;
+        }
+    }
+
+    /** Evita que el diálogo se muestre cuando la supervisión no estaba en estado PROGRAMADO. */
+    @Override
+    public void setVisible(boolean b) {
+        if (b && estadoInvalido) {
+            return;
+        }
+        super.setVisible(b);
+    }
+
+    /** Valida el motivo y las observaciones; devuelve el mensaje de error, o null si todo está bien. */
+    private String validar() {
+        String motivo = (String) cmbMotivo.getSelectedItem();
+        if (motivo == null || SELECCIONE.equals(motivo)) {
+            return "El motivo es obligatorio.";
+        }
+        if (txtObservaciones.getText() == null || txtObservaciones.getText().trim().isEmpty()) {
+            return "Las observaciones son obligatorias.";
+        }
+        return null;
     }
 
     /**
@@ -27,22 +106,201 @@ public class dlgReprogramarAnular extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        grpAccion = new javax.swing.ButtonGroup();
+        lblFaseCaption = new javax.swing.JLabel();
+        lblFase = new javax.swing.JLabel();
+        lblAccion = new javax.swing.JLabel();
+        rdoReprogramar = new javax.swing.JRadioButton();
+        rdoAnular = new javax.swing.JRadioButton();
+        lblMotivo = new javax.swing.JLabel();
+        cmbMotivo = new javax.swing.JComboBox<>();
+        lblObservaciones = new javax.swing.JLabel();
+        scrollObservaciones = new javax.swing.JScrollPane();
+        txtObservaciones = new javax.swing.JTextArea();
+        lblArchivo = new javax.swing.JLabel();
+        txtArchivo = new javax.swing.JTextField();
+        btnAdjuntar = new javax.swing.JButton();
+        btnCancelar = new javax.swing.JButton();
+        btnAceptar = new javax.swing.JButton();
+
         setTitle("Reprogramar / Anular");
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+
+        lblFaseCaption.setText("Fase actual");
+
+        lblFase.setText("-");
+
+        lblAccion.setText("Acción");
+
+        grpAccion.add(rdoReprogramar);
+        rdoReprogramar.setSelected(true);
+        rdoReprogramar.setText("Reprogramar");
+
+        grpAccion.add(rdoAnular);
+        rdoAnular.setText("Anular");
+
+        lblMotivo.setText("Motivo");
+
+        lblObservaciones.setText("Observaciones");
+
+        txtObservaciones.setColumns(20);
+        txtObservaciones.setLineWrap(true);
+        txtObservaciones.setRows(4);
+        txtObservaciones.setWrapStyleWord(true);
+        scrollObservaciones.setViewportView(txtObservaciones);
+
+        lblArchivo.setText("Documento adjunto (opcional)");
+
+        txtArchivo.setEditable(false);
+        txtArchivo.setBackground(new java.awt.Color(230, 230, 230));
+
+        btnAdjuntar.setText("Adjuntar");
+        btnAdjuntar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAdjuntarActionPerformed(evt);
+            }
+        });
+
+        btnCancelar.setText("Cancelar");
+        btnCancelar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCancelarActionPerformed(evt);
+            }
+        });
+
+        btnAceptar.setText("Aceptar");
+        btnAceptar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAceptarActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(lblFaseCaption)
+                        .addGap(10, 10, 10)
+                        .addComponent(lblFase))
+                    .addComponent(lblAccion)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(rdoReprogramar)
+                        .addGap(24, 24, 24)
+                        .addComponent(rdoAnular))
+                    .addComponent(lblMotivo)
+                    .addComponent(cmbMotivo, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+                    .addComponent(lblObservaciones)
+                    .addComponent(scrollObservaciones, javax.swing.GroupLayout.DEFAULT_SIZE, 550, Short.MAX_VALUE)
+                    .addComponent(lblArchivo)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(txtArchivo, javax.swing.GroupLayout.DEFAULT_SIZE, 420, Short.MAX_VALUE)
+                        .addGap(10, 10, 10)
+                        .addComponent(btnAdjuntar))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnCancelar)
+                        .addGap(10, 10, 10)
+                        .addComponent(btnAceptar)))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(lblFaseCaption)
+                    .addComponent(lblFase))
+                .addGap(18, 18, 18)
+                .addComponent(lblAccion)
+                .addGap(6, 6, 6)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(rdoReprogramar)
+                    .addComponent(rdoAnular))
+                .addGap(18, 18, 18)
+                .addComponent(lblMotivo)
+                .addGap(4, 4, 4)
+                .addComponent(cmbMotivo, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lblObservaciones)
+                .addGap(4, 4, 4)
+                .addComponent(scrollObservaciones, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(lblArchivo)
+                .addGap(4, 4, 4)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(txtArchivo, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnAdjuntar))
+                .addGap(24, 24, 24)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnCancelar)
+                    .addComponent(btnAceptar))
+                .addContainerGap())
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnAdjuntarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAdjuntarActionPerformed
+        javax.swing.JFileChooser selector = new javax.swing.JFileChooser();
+        int resultado = selector.showOpenDialog(this);
+        if (resultado == javax.swing.JFileChooser.APPROVE_OPTION) {
+            archivoAdjunto = selector.getSelectedFile();
+            txtArchivo.setText(archivoAdjunto.getAbsolutePath());
+        }
+    }//GEN-LAST:event_btnAdjuntarActionPerformed
+
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
+        dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void btnAceptarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAceptarActionPerformed
+        String error = validar();
+        if (error != null) {
+            javax.swing.JOptionPane.showMessageDialog(this, error, "Validación",
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String motivo = (String) cmbMotivo.getSelectedItem();
+        String observaciones = txtObservaciones.getText().trim();
+        String nuevoEstado = rdoReprogramar.isSelected() ? "REPROGRAMADO" : "CANCELADO";
+        try {
+            boolean correoEnviado = new controller.ReprogramarAnularController().guardar(
+                    idSupervision, nuevoEstado, motivo, observaciones, archivoAdjunto, cuiSupervisorAsignado);
+            guardado = true;
+            if (!correoEnviado) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "Se guardó el cambio, pero no se pudo enviar la notificación por correo.",
+                        "Aviso", javax.swing.JOptionPane.WARNING_MESSAGE);
+            }
+            javax.swing.JOptionPane.showMessageDialog(this, "Operación realizada correctamente", "Éxito",
+                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            dispose();
+        } catch (controller.ReprogramarAnularException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(), "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnAceptarActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAceptar;
+    private javax.swing.JButton btnAdjuntar;
+    private javax.swing.JButton btnCancelar;
+    private javax.swing.JComboBox<String> cmbMotivo;
+    private javax.swing.ButtonGroup grpAccion;
+    private javax.swing.JLabel lblAccion;
+    private javax.swing.JLabel lblArchivo;
+    private javax.swing.JLabel lblFase;
+    private javax.swing.JLabel lblFaseCaption;
+    private javax.swing.JLabel lblMotivo;
+    private javax.swing.JLabel lblObservaciones;
+    private javax.swing.JRadioButton rdoAnular;
+    private javax.swing.JRadioButton rdoReprogramar;
+    private javax.swing.JScrollPane scrollObservaciones;
+    private javax.swing.JTextField txtArchivo;
+    private javax.swing.JTextArea txtObservaciones;
     // End of variables declaration//GEN-END:variables
 }

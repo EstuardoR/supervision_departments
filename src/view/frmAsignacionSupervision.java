@@ -13,6 +13,9 @@ public class frmAsignacionSupervision extends javax.swing.JInternalFrame {
     /** Texto usado como opción "sin seleccionar" en los combos de lugar. */
     private static final String PLACEHOLDER = "-- Seleccione --";
 
+    /** Null cuando la pantalla está creando una asignación nueva; con valor cuando está editando una existente. */
+    private Integer idSupervision;
+
     /**
      * Creates new form frmAsignacionSupervision
      */
@@ -22,6 +25,67 @@ public class frmAsignacionSupervision extends javax.swing.JInternalFrame {
         cargarCatalogosFijos();
         cargarSupervisores();
         actualizarHabilitacionPorTipo();
+    }
+
+    /** Abre la pantalla en modo edición, precargada con los datos de la supervisión indicada. */
+    public frmAsignacionSupervision(int idSupervision) {
+        this();
+        this.idSupervision = idSupervision;
+        setTitle("Asignación de Supervisión – Editar asignación");
+        btnGuardar.setText("Actualizar");
+        cargarDatosParaEdicion();
+    }
+
+    /** Trae la supervisión a editar y llena con sus datos todos los campos del formulario. */
+    private void cargarDatosParaEdicion() {
+        try {
+            model.Supervision s = new controller.AsignacionSupervisionController().obtenerSupervisionPorId(idSupervision);
+            if (s == null) {
+                javax.swing.JOptionPane.showMessageDialog(this, "No se encontró la supervisión.", "Error",
+                        javax.swing.JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            seleccionarSupervisorPorCui(s.getCuiSupervisor());
+            autocompletarDatosSupervisor();
+            cmbRegion.setSelectedItem(s.getRegion());
+            cmbOrden.setSelectedItem(s.getOrdenAsignacion());
+            spnFechaInicio.setValue(s.getFechaInicioComision());
+            spnFechaFin.setValue(s.getFechaFinComision());
+            spnAlcanceInicial.setValue(s.getFechaAlcanceInicial());
+            spnAlcanceFinal.setValue(s.getFechaAlcanceFinal());
+            rdoCampo.setSelected("CAMPO".equals(s.getTipoNombramiento()));
+            rdoEspecifica.setSelected(!"CAMPO".equals(s.getTipoNombramiento()));
+            actualizarHabilitacionPorTipo();
+            seleccionarSiNoVacio(cmbDireccionAdmin, s.getDireccionAdministrativa());
+            seleccionarSiNoVacio(cmbDeptoAdmin, s.getDepartamentoAdministrativo());
+            seleccionarSiNoVacio(cmbDepartamento, s.getDepartamento());
+            seleccionarSiNoVacio(cmbMunicipio, s.getMunicipio());
+            seleccionarSiNoVacio(cmbOficina, s.getOficinaAuxiliatura());
+            cmbViaticos.setSelectedItem(s.isAutorizacionViaticos() ? "SI" : "NO");
+            cmbVehiculo.setSelectedItem(s.isVehiculoPropio() ? "SI" : "NO");
+            txtObservaciones.setText(s.getObservaciones());
+        } catch (controller.AsignacionSupervisionException ex) {
+            javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(), "Error",
+                    javax.swing.JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Busca en cmbSupervisor el usuario con ese CUI y lo deja seleccionado. */
+    private void seleccionarSupervisorPorCui(String cui) {
+        for (int i = 0; i < cmbSupervisor.getItemCount(); i++) {
+            model.Usuario usuario = cmbSupervisor.getItemAt(i);
+            if (usuario != null && usuario.getCui() != null && usuario.getCui().equals(cui)) {
+                cmbSupervisor.setSelectedIndex(i);
+                return;
+            }
+        }
+    }
+
+    /** Selecciona un valor en un combo de lugar solo si no viene vacío (si no, se deja en el PLACEHOLDER). */
+    private void seleccionarSiNoVacio(javax.swing.JComboBox<String> combo, String valor) {
+        if (valor != null && !valor.isEmpty()) {
+            combo.setSelectedItem(valor);
+        }
     }
 
     /** Configura los 4 JSpinner de fecha para usar SpinnerDateModel con formato dd/MM/yyyy. */
@@ -529,11 +593,20 @@ public class frmAsignacionSupervision extends javax.swing.JInternalFrame {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         model.Supervision supervision = construirSupervisionDesdeFormulario();
+        controller.AsignacionSupervisionController controlador = new controller.AsignacionSupervisionController();
         try {
-            new controller.AsignacionSupervisionController().guardarAsignacion(supervision);
-            javax.swing.JOptionPane.showMessageDialog(this, "Asignación guardada", "Éxito",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            limpiarFormulario();
+            if (idSupervision == null) {
+                controlador.guardarAsignacion(supervision);
+                javax.swing.JOptionPane.showMessageDialog(this, "Asignación guardada", "Éxito",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                limpiarFormulario();
+            } else {
+                supervision.setIdSupervision(idSupervision);
+                controlador.actualizarAsignacion(supervision);
+                javax.swing.JOptionPane.showMessageDialog(this, "Asignación actualizada", "Éxito",
+                        javax.swing.JOptionPane.INFORMATION_MESSAGE);
+                dispose();
+            }
         } catch (controller.AsignacionSupervisionException ex) {
             javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(), "Error",
                     javax.swing.JOptionPane.ERROR_MESSAGE);

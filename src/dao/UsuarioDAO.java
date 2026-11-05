@@ -26,7 +26,7 @@ public class UsuarioDAO {
             throw new SQLException("No se pudo establecer conexión con la base de datos.");
         }
         try {
-            String sql = "SELECT cui, nombre_completo FROM dbo.Usuarios "
+            String sql = "SELECT cui, nombre_completo, correo_institucional FROM dbo.Usuarios "
                     + "WHERE perfil = ? ORDER BY nombre_completo";
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 ps.setString(1, perfil);
@@ -35,6 +35,7 @@ public class UsuarioDAO {
                         Usuario usuario = new Usuario();
                         usuario.setCui(rs.getString("cui"));
                         usuario.setNombreCompleto(rs.getString("nombre_completo"));
+                        usuario.setCorreoInstitucional(rs.getString("correo_institucional"));
                         usuarios.add(usuario);
                     }
                 }

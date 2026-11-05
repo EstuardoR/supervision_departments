@@ -52,6 +52,25 @@ public class AsignacionSupervisionController {
         }
     }
 
+    /** Trae una supervisión existente por id, para precargar la pantalla en modo edición. */
+    public Supervision obtenerSupervisionPorId(int idSupervision) throws AsignacionSupervisionException {
+        try {
+            return SupervisionDAO.buscarPorId(idSupervision);
+        } catch (SupervisionException e) {
+            throw new AsignacionSupervisionException(e.getMessage(), e);
+        }
+    }
+
+    /** Valida los datos de la asignación y, si son correctos, actualiza la supervisión existente. */
+    public void actualizarAsignacion(Supervision s) throws AsignacionSupervisionException {
+        validar(s);
+        try {
+            SupervisionDAO.actualizar(s);
+        } catch (SupervisionException e) {
+            throw new AsignacionSupervisionException(e.getMessage(), e);
+        }
+    }
+
     /** Aplica, en el orden pedido, las reglas de negocio de la asignación de supervisión. */
     private void validar(Supervision s) throws AsignacionSupervisionException {
         if (isVacio(s.getCuiSupervisor()) || isVacio(s.getRegion()) || isVacio(s.getOrdenAsignacion())

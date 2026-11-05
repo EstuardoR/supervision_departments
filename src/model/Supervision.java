@@ -12,6 +12,8 @@ import java.util.Date;
  */
 public class Supervision {
 
+    /** Null cuando es una supervisión nueva; con valor cuando se está editando una existente. */
+    private Integer idSupervision;
     private String cuiSupervisor;
     private String region;
     private String ordenAsignacion;
@@ -28,6 +30,15 @@ public class Supervision {
     private boolean autorizacionViaticos;
     private boolean vehiculoPropio;
     private String observaciones;
+    private String estado;
+
+    public Integer getIdSupervision() {
+        return idSupervision;
+    }
+
+    public void setIdSupervision(Integer idSupervision) {
+        this.idSupervision = idSupervision;
+    }
 
     public String getCuiSupervisor() {
         return cuiSupervisor;
@@ -155,5 +166,13 @@ public class Supervision {
 
     public void setObservaciones(String observaciones) {
         this.observaciones = observaciones;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 }
