@@ -14,21 +14,24 @@ import java.sql.SQLException;
 
 public class clsConnection {
 
-    // CAMBIAR EL USER Y PASSWORD POR LAS CREDENCIALES QUE TENGAS CONFIGURADAS EN TU LOCAL
-    private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=supervision_db";
-    private static final String USER = "sa";
-    private static final String PASSWORD = "Bruno2701";
+     public static Connection getConexion() {
+        String Cadena = "jdbc:sqlserver:"   /*Driver de Conexión*/
+                + "//localhost:1433;"      /*Dirección IP del servidor BD y el Puerto*/
+                + "databaseName=supervision_db; " /*Nombre de la Base de Datos*/
+                + "user=sa; "               /*Usuario de la Base de Datos*/
+                + "password=Sofia@57; "  /*Password de la Base de Datos*/
+                + "encrypt=true;"
+                + "trustServerCertificate=true;"
+                + "loginTimeout=30";        /*Tiempo de espera para establecer conexión*/
 
-    public static Connection ConnectionDB() {
-        Connection con = null;
         try {
-            con = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Conexión establecida con exito :)!!");
-        } catch (SQLException e) {
-            System.out.println("Ocurrio un error al establecer conexión" + e.getMessage());
+            Connection con = DriverManager.getConnection(Cadena);
+            System.out.println("Base conectada: " + con.getCatalog());
+            return con;
+        } catch (SQLException ex) {
+            System.out.println("ERROR:" + ex.toString());
+            return null;
         }
-        return con;
-
     }
 
 }
