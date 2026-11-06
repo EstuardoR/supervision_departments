@@ -17,7 +17,7 @@ public class clsConnection {
     // CAMBIAR EL USER Y PASSWORD POR LAS CREDENCIALES QUE TENGAS CONFIGURADAS EN TU LOCAL
     private static final String URL = "jdbc:sqlserver://localhost:1433;databaseName=supervision_db";
     private static final String USER = "sa";
-    private static final String PASSWORD = "Bruno2701";
+    private static final String PASSWORD = "200610";
 
     public static Connection ConnectionDB() {
         Connection con = null;
