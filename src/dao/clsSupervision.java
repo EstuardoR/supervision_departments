@@ -15,7 +15,7 @@ public class clsSupervision {
             String estadoNuevo,
             String cuiSupervisor) throws SQLException {
 
-        Connection con = clsConnection.getConexion();
+        Connection con = clsConnection.ConnectionDB();
 
         if (con == null) {
             throw new SQLException("No se pudo conectar con SQL Server.");
