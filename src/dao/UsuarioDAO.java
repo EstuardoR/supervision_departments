@@ -50,7 +50,7 @@ public class UsuarioDAO {
     }
 
     public Usuario buscarPorCui(String cui) throws SQLException {
-        Connection conn = util.clsConnection.getConexion();
+        Connection conn = util.clsConnection.ConnectionDB();
         if (conn == null) {
             throw new SQLException("No se pudo establecer conexión con la base de datos.");
         }

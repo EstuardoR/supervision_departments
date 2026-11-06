@@ -107,57 +107,40 @@ public class SupervisionDAO {
         }
     }
 
-    public static void cambiarEstado(int idSupervision, String nuevoEstado, String motivoCambio)
-            throws SupervisionException {
-        if (nuevoEstado == null || !ESTADOS_VALIDOS.contains(nuevoEstado)) {
-            throw new SupervisionException("El estado '" + nuevoEstado + "' no es válido.");
-        }
+    /**
+     * Cambia el estado de una supervisión, pero solo si su estado actual es
+     * exactamente el esperado (evita que dos usuarios pisen el mismo cambio a
+     * la vez), y registra el historial. Todo en una sola transacción. Esta
+     * (junto con cambiarEstadoDelSupervisorAsignado) es la única forma en la
+     * que cualquier pantalla del sistema debe cambiar Supervisiones.estado.
+     */
+    public static void cambiarEstado(int idSupervision, String estadoEsperado, String nuevoEstado,
+            String motivoCambio) throws SupervisionException {
+        ejecutarCambioDeEstado(idSupervision, estadoEsperado, nuevoEstado, motivoCambio, null, false);
+    }
 
-        Usuario usuarioActual = Sesion.getInstancia().getUsuarioActual();
-        if (usuarioActual == null) {
-            throw new SupervisionException("No hay una sesión activa para registrar el cambio.");
-        }
-        String responsableCui = usuarioActual.getCui();
+    /**
+     * Igual que cambiarEstado, pero además exige que la supervisión esté
+     * asignada (cui_supervisor) al usuario en sesión. Se usa para acciones
+     * que solo le corresponden al supervisor asignado, como iniciar su
+     * propia visita.
+     */
+    public static void cambiarEstadoDelSupervisorAsignado(int idSupervision, String estadoEsperado,
+            String nuevoEstado, String motivoCambio) throws SupervisionException {
+        ejecutarCambioDeEstado(idSupervision, estadoEsperado, nuevoEstado, motivoCambio, null, true);
+    }
 
+    /** Abre su propia conexión/transacción alrededor de actualizarEstadoYHistorial. */
+    private static void ejecutarCambioDeEstado(int idSupervision, String estadoEsperado, String nuevoEstado,
+            String motivoCambio, String observaciones, boolean soloSupervisorAsignado) throws SupervisionException {
         Connection conn = util.clsConnection.ConnectionDB();
         if (conn == null) {
             throw new SupervisionException("No se pudo establecer conexión con la base de datos.");
         }
         try {
             conn.setAutoCommit(false);
-
-            String estadoAnterior;
-            String selectSql = "SELECT estado FROM dbo.Supervisiones WHERE id_supervision = ?";
-            try (PreparedStatement ps = conn.prepareStatement(selectSql)) {
-                ps.setInt(1, idSupervision);
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (!rs.next()) {
-                        throw new SupervisionException(
-                                "No existe la supervisión con id " + idSupervision + ".");
-                    }
-                    estadoAnterior = rs.getString("estado");
-                }
-            }
-
-            String updateSql = "UPDATE dbo.Supervisiones SET estado = ? WHERE id_supervision = ?";
-            try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
-                ps.setString(1, nuevoEstado);
-                ps.setInt(2, idSupervision);
-                ps.executeUpdate();
-            }
-
-            String insertSql = "INSERT INTO dbo.Historial_Supervision "
-                    + "(id_supervision, estado_anterior, estado_nuevo, motivo_cambio, responsable_cui) "
-                    + "VALUES (?, ?, ?, ?, ?)";
-            try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
-                ps.setInt(1, idSupervision);
-                ps.setString(2, estadoAnterior);
-                ps.setString(3, nuevoEstado);
-                ps.setString(4, motivoCambio);
-                ps.setString(5, responsableCui);
-                ps.executeUpdate();
-            }
-
+            actualizarEstadoYHistorial(conn, idSupervision, estadoEsperado, nuevoEstado, motivoCambio,
+                    observaciones, soloSupervisorAsignado);
             conn.commit();
         } catch (SQLException e) {
             rollback(conn);
@@ -171,6 +154,60 @@ public class SupervisionDAO {
                 conn.close();
             } catch (SQLException ignored) {
             }
+        }
+    }
+
+    /**
+     * Función utilitaria única para cambiar Supervisiones.estado y registrar su
+     * historial: valida el nuevo estado, actualiza solo si el estado actual
+     * coincide con el esperado (y, si se pide, que el supervisor asignado sea
+     * el de la sesión), e inserta la fila de historial. No abre conexión ni
+     * hace commit/rollback/close: eso lo maneja quien la llama, para poder
+     * combinarla con otras operaciones (como guardar un documento) dentro de
+     * la misma transacción. Cualquier pantalla o DAO que necesite cambiar el
+     * estado de una supervisión debe pasar por aquí.
+     */
+    public static void actualizarEstadoYHistorial(Connection conn, int idSupervision, String estadoEsperado,
+            String nuevoEstado, String motivoCambio, String observaciones, boolean soloSupervisorAsignado)
+            throws SQLException, SupervisionException {
+        if (nuevoEstado == null || !ESTADOS_VALIDOS.contains(nuevoEstado)) {
+            throw new SupervisionException("El estado '" + nuevoEstado + "' no es válido.");
+        }
+
+        Usuario usuarioActual = Sesion.getInstancia().getUsuarioActual();
+        if (usuarioActual == null) {
+            throw new SupervisionException("No hay una sesión activa para registrar el cambio.");
+        }
+        String responsableCui = usuarioActual.getCui();
+
+        String updateSql = "UPDATE dbo.Supervisiones SET estado = ? "
+                + "WHERE id_supervision = ? AND estado = ?"
+                + (soloSupervisorAsignado ? " AND cui_supervisor = ?" : "");
+        try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+            ps.setString(1, nuevoEstado);
+            ps.setInt(2, idSupervision);
+            ps.setString(3, estadoEsperado);
+            if (soloSupervisorAsignado) {
+                ps.setString(4, responsableCui);
+            }
+            int filasActualizadas = ps.executeUpdate();
+            if (filasActualizadas == 0) {
+                throw new SupervisionException("La supervisión no está en estado " + estadoEsperado
+                        + (soloSupervisorAsignado ? ", o no está asignada al supervisor en sesión." : "."));
+            }
+        }
+
+        String insertSql = "INSERT INTO dbo.Historial_Supervision "
+                + "(id_supervision, estado_anterior, estado_nuevo, motivo_cambio, observaciones, responsable_cui) "
+                + "VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement ps = conn.prepareStatement(insertSql)) {
+            ps.setInt(1, idSupervision);
+            ps.setString(2, estadoEsperado);
+            ps.setString(3, nuevoEstado);
+            ps.setString(4, motivoCambio);
+            ps.setString(5, observaciones);
+            ps.setString(6, responsableCui);
+            ps.executeUpdate();
         }
     }
 
@@ -396,11 +433,6 @@ public class SupervisionDAO {
         if (!"REPROGRAMADO".equals(nuevoEstado) && !"CANCELADO".equals(nuevoEstado)) {
             throw new SupervisionException("El estado '" + nuevoEstado + "' no es válido para esta operación.");
         }
-        Usuario usuarioActual = Sesion.getInstancia().getUsuarioActual();
-        if (usuarioActual == null) {
-            throw new SupervisionException("No hay una sesión activa para registrar el cambio.");
-        }
-        String responsableCui = usuarioActual.getCui();
 
         Connection conn = util.clsConnection.ConnectionDB();
         if (conn == null) {
@@ -409,28 +441,7 @@ public class SupervisionDAO {
         try {
             conn.setAutoCommit(false);
 
-            String updateSql = "UPDATE dbo.Supervisiones SET estado = ? "
-                    + "WHERE id_supervision = ? AND estado = 'PROGRAMADO'";
-            try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
-                ps.setString(1, nuevoEstado);
-                ps.setInt(2, idSupervision);
-                int filasActualizadas = ps.executeUpdate();
-                if (filasActualizadas == 0) {
-                    throw new SupervisionException("La supervisión ya no está en estado PROGRAMADO.");
-                }
-            }
-
-            String insertHistorialSql = "INSERT INTO dbo.Historial_Supervision "
-                    + "(id_supervision, estado_anterior, estado_nuevo, motivo_cambio, observaciones, responsable_cui) "
-                    + "VALUES (?, 'PROGRAMADO', ?, ?, ?, ?)";
-            try (PreparedStatement ps = conn.prepareStatement(insertHistorialSql)) {
-                ps.setInt(1, idSupervision);
-                ps.setString(2, nuevoEstado);
-                ps.setString(3, motivo);
-                ps.setString(4, observaciones);
-                ps.setString(5, responsableCui);
-                ps.executeUpdate();
-            }
+            actualizarEstadoYHistorial(conn, idSupervision, "PROGRAMADO", nuevoEstado, motivo, observaciones, false);
 
             if (rutaArchivo != null) {
                 String insertDocSql = "INSERT INTO dbo.Documentos_Supervision "

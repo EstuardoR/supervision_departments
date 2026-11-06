@@ -37,6 +37,9 @@ public class frmPrincipal extends javax.swing.JFrame {
 
         mnuAsignacionSupervision.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_ASIGNACION_SUPERVISION));
         mnuListarSupervisiones.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_BANDEJA_PLANIFICACION));
+        mnuEjecucionCampo.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_BANDEJA_EJECUCION));
+        mnuResultadosSupervision.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_RESULTADOS_SUPERVISION));
+        mnuInformeFinal.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_INFORME_FINAL));
         mnuIndicadores.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_REPORTES));
 
         ocultarMenuSiVacio(mnuAdministracion);
@@ -75,6 +78,24 @@ public class frmPrincipal extends javax.swing.JFrame {
         pantalla.setVisible(true);
     }//GEN-LAST:event_mnuIndicadoresActionPerformed
 
+    private void mnuEjecucionCampoActionPerformed(java.awt.event.ActionEvent evt) {
+        view.frmBandejaEjecucion pantalla = new view.frmBandejaEjecucion();
+        desktop.add(pantalla);
+        pantalla.setVisible(true);
+    }
+
+    private void mnuResultadosSupervisionActionPerformed(java.awt.event.ActionEvent evt) {
+        view.frmResultadosSupervision pantalla = new view.frmResultadosSupervision();
+        desktop.add(pantalla);
+        pantalla.setVisible(true);
+    }
+
+    private void mnuInformeFinalActionPerformed(java.awt.event.ActionEvent evt) {
+        view.frmInformeFinal pantalla = new view.frmInformeFinal();
+        desktop.add(pantalla);
+        pantalla.setVisible(true);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -90,6 +111,9 @@ public class frmPrincipal extends javax.swing.JFrame {
         mnuAsignacionSupervision = new javax.swing.JMenuItem();
         mnuListarSupervisiones = new javax.swing.JMenuItem();
         mnuGestion = new javax.swing.JMenu();
+        mnuEjecucionCampo = new javax.swing.JMenuItem();
+        mnuResultadosSupervision = new javax.swing.JMenuItem();
+        mnuInformeFinal = new javax.swing.JMenuItem();
         mnuReportes = new javax.swing.JMenu();
         mnuIndicadores = new javax.swing.JMenuItem();
         desktop = new javax.swing.JDesktopPane();
@@ -123,6 +147,31 @@ public class frmPrincipal extends javax.swing.JFrame {
         menuBar.add(mnuSupervision);
 
         mnuGestion.setText("Gestión");
+
+        mnuEjecucionCampo.setText("Ejecución de campo");
+        mnuEjecucionCampo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuEjecucionCampoActionPerformed(evt);
+            }
+        });
+        mnuGestion.add(mnuEjecucionCampo);
+
+        mnuResultadosSupervision.setText("Resultados de supervisión");
+        mnuResultadosSupervision.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuResultadosSupervisionActionPerformed(evt);
+            }
+        });
+        mnuGestion.add(mnuResultadosSupervision);
+
+        mnuInformeFinal.setText("Informe final");
+        mnuInformeFinal.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuInformeFinalActionPerformed(evt);
+            }
+        });
+        mnuGestion.add(mnuInformeFinal);
+
         menuBar.add(mnuGestion);
 
         mnuReportes.setText("Reportes");
@@ -199,9 +248,12 @@ public class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JMenu mnuAdministracion;
     private javax.swing.JMenuItem mnuAsignacionSupervision;
+    private javax.swing.JMenuItem mnuEjecucionCampo;
     private javax.swing.JMenu mnuGestion;
     private javax.swing.JMenuItem mnuIndicadores;
+    private javax.swing.JMenuItem mnuInformeFinal;
     private javax.swing.JMenuItem mnuListarSupervisiones;
+    private javax.swing.JMenuItem mnuResultadosSupervision;
     private javax.swing.JMenu mnuReportes;
     private javax.swing.JMenu mnuSupervision;
     private javax.swing.JPanel pnlEstado;

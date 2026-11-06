@@ -1,4 +1,7 @@
-
+/*
+ * Autor: Andrea Sofia Guerrero Castro
+ * Carné: 9490-25-14813
+ */
 package dao;
 
 import java.io.File;
@@ -74,7 +77,7 @@ public class clsResultados {
         List<Path> archivosCopiados = new ArrayList<>();
         boolean guardado = false;
 
-        try (Connection con = clsConnection.getConexion()) {
+        try (Connection con = clsConnection.ConnectionDB()) {
 
             if (con == null) {
                 throw new SQLException(
@@ -307,7 +310,7 @@ public static class ResultadoGuardado {
 public ResultadoGuardado cargarResultados(
         int idSupervision) throws SQLException {
 
-    try (Connection con = clsConnection.getConexion()) {
+    try (Connection con = clsConnection.ConnectionDB()) {
 
         if (con == null) {
             throw new SQLException(
@@ -424,7 +427,7 @@ public boolean puedeGenerarDocumento(
         + "SELECT 1 FROM dbo.Detalle_Resultados d "
         + "WHERE d.id_resultado = r.id_resultado)";
 
-    try (Connection con = clsConnection.getConexion()) {
+    try (Connection con = clsConnection.ConnectionDB()) {
 
         if (con == null) {
             throw new SQLException(

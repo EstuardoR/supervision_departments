@@ -1,11 +1,8 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Autor: Andrea Sofia Guerrero Castro
+ * Carné: 9490-25-14813
  */
 package view;
-
-import dao.clsSupervision;
-
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -15,9 +12,7 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import util.clsConnection;
 
-public class frmBandejaEjecucion extends javax.swing.JFrame {
-    
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmBandejaEjecucion.class.getName());
+public class frmBandejaEjecucion extends javax.swing.JInternalFrame {
 
     /**
      * Creates new form frmBandejaEjecucion
@@ -29,6 +24,8 @@ configurarTabla();
 
     btnSupervision.setEnabled(false);
     btnFinalizar.setEnabled(false);
+    btnResultados.setEnabled(false);
+    btnInforme.setEnabled(false);
 
     tablaEjecucion.getSelectionModel().addListSelectionListener(e -> {
         if (!e.getValueIsAdjusting()) {
@@ -36,9 +33,8 @@ configurarTabla();
         }
     });
 
-    // TEMPORAL: supervisor de prueba
-    setCuiSupervisor("1000000040404");
-    
+    setCuiSupervisor(util.Sesion.getInstancia().getUsuarioActual().getCui());
+
     }
     
     private void configurarTabla() {
@@ -87,7 +83,7 @@ private void cargarSupervisiones() {
             estado
         FROM dbo.Supervisiones
         WHERE cui_supervisor = ?
-        AND estado IN ('APROBADO', 'INICIADO')
+        AND estado IN ('APROBADO', 'INICIADO', 'EJECUTADO')
         ORDER BY fecha_inicio_comision DESC
         """;
 
@@ -95,7 +91,7 @@ private void cargarSupervisiones() {
         return;
     }
 
-    try (Connection con = clsConnection.getConexion()) {
+    try (Connection con = clsConnection.ConnectionDB()) {
 
         if (con == null) {
             JOptionPane.showMessageDialog(this,
@@ -138,6 +134,8 @@ private void verificarSeleccion() {
     if (fila == -1) {
         btnSupervision.setEnabled(false);
         btnFinalizar.setEnabled(false);
+        btnResultados.setEnabled(false);
+        btnInforme.setEnabled(false);
         return;
     }
 
@@ -149,6 +147,52 @@ private void verificarSeleccion() {
     btnSupervision.setEnabled(estado.equals("APROBADO"));
 
     btnFinalizar.setEnabled(estado.equals("INICIADO"));
+
+    btnResultados.setEnabled(estado.equals("EJECUTADO"));
+
+    btnInforme.setEnabled(estado.equals("EJECUTADO"));
+}
+
+private void btnResultadosActionPerformed(java.awt.event.ActionEvent evt) {
+
+    int idSupervision = obtenerIdSupervision();
+
+    if (idSupervision == -1) {
+        return;
+    }
+
+    view.frmResultadosSupervision pantalla =
+            new view.frmResultadosSupervision(idSupervision);
+
+    getDesktopPane().add(pantalla);
+    pantalla.setVisible(true);
+
+    pantalla.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+        public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+            cargarSupervisiones();
+        }
+    });
+}
+
+private void btnInformeActionPerformed(java.awt.event.ActionEvent evt) {
+
+    int idSupervision = obtenerIdSupervision();
+
+    if (idSupervision == -1) {
+        return;
+    }
+
+    view.frmInformeFinal pantalla =
+            new view.frmInformeFinal(idSupervision);
+
+    getDesktopPane().add(pantalla);
+    pantalla.setVisible(true);
+
+    pantalla.addInternalFrameListener(new javax.swing.event.InternalFrameAdapter() {
+        public void internalFrameClosed(javax.swing.event.InternalFrameEvent e) {
+            cargarSupervisiones();
+        }
+    });
 }
 
 private int obtenerIdSupervision() {
@@ -184,10 +228,15 @@ private int obtenerIdSupervision() {
         btnMenu = new javax.swing.JButton();
         btnSupervision = new javax.swing.JButton();
         btnFinalizar = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        btnResultados = new javax.swing.JButton();
+        btnInforme = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Bandeja de Ejecución");
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
         jLabel1.setText("Supervisiones asignadas");
@@ -224,29 +273,11 @@ private int obtenerIdSupervision() {
         btnFinalizar.setText("Finalizar visita");
         btnFinalizar.addActionListener(this::btnFinalizarActionPerformed);
 
-        jPanel1.setBackground(new java.awt.Color(51, 153, 255));
-        jPanel1.setForeground(new java.awt.Color(255, 255, 255));
+        btnResultados.setText("Registrar resultados");
+        btnResultados.addActionListener(this::btnResultadosActionPerformed);
 
-        jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel2.setText("Bandeja de Ejercución");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel2)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(23, Short.MAX_VALUE)
-                .addComponent(jLabel2)
-                .addContainerGap())
-        );
+        btnInforme.setText("Informe final");
+        btnInforme.addActionListener(this::btnInformeActionPerformed);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -262,15 +293,17 @@ private int obtenerIdSupervision() {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnSupervision)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnFinalizar)))
+                        .addComponent(btnFinalizar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnResultados)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnInforme)))
                 .addContainerGap(28, Short.MAX_VALUE))
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(32, 32, 32)
+                .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 204, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -278,7 +311,9 @@ private int obtenerIdSupervision() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnMenu)
                     .addComponent(btnSupervision)
-                    .addComponent(btnFinalizar))
+                    .addComponent(btnFinalizar)
+                    .addComponent(btnResultados)
+                    .addComponent(btnInforme))
                 .addContainerGap(63, Short.MAX_VALUE))
         );
 
@@ -306,34 +341,21 @@ if (respuesta != JOptionPane.YES_OPTION) {
 }
 
 try {
-    clsSupervision dao = new clsSupervision();
-
-    boolean actualizado = dao.cambiarEstado(
+    dao.SupervisionDAO.cambiarEstadoDelSupervisorAsignado(
             idSupervision,
             "APROBADO",
             "INICIADO",
-            cuiSupervisor
+            "Inicio de supervisión"
     );
 
-    if (actualizado) {
+    JOptionPane.showMessageDialog(
+            this,
+            "Supervisión iniciada correctamente."
+    );
 
-        JOptionPane.showMessageDialog(
-                this,
-                "Supervisión iniciada correctamente."
-        );
+    cargarSupervisiones();
 
-        cargarSupervisiones();
-
-    } else {
-
-        JOptionPane.showMessageDialog(
-                this,
-                "No se pudo iniciar la supervisión. "
-                + "Verifique su estado actual."
-        );
-    }
-
-} catch (SQLException e) {
+} catch (dao.SupervisionException e) {
 
     JOptionPane.showMessageDialog(
             this,
@@ -379,38 +401,13 @@ ventana.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnMenuActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new frmBandejaEjecucion().setVisible(true));
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnFinalizar;
+    private javax.swing.JButton btnInforme;
     private javax.swing.JButton btnMenu;
+    private javax.swing.JButton btnResultados;
     private javax.swing.JButton btnSupervision;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable tablaEjecucion;
     // End of variables declaration//GEN-END:variables

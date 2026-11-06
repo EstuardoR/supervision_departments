@@ -1,6 +1,6 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Autor: Andrea Sofia Guerrero Castro
+ * Carné: 9490-25-14813
  */
 package view;
 
@@ -14,7 +14,6 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,7 +149,7 @@ private void guardarVisita() {
     List<Path> archivosCopiados = new ArrayList<>();
     boolean guardado = false;
 
-    try (Connection con = clsConnection.getConexion()) {
+    try (Connection con = clsConnection.ConnectionDB()) {
 
         if (con == null) {
             throw new SQLException("No se pudo conectar con SQL Server.");
@@ -159,53 +158,12 @@ private void guardarVisita() {
         con.setAutoCommit(false);
 
         try {
-            // 1. Comprobar estado y actualizar la supervisión
-            String sqlActualizar =
-                "UPDATE dbo.Supervisiones "
-                + "SET estado = 'EJECUTADO' "
-                + "WHERE id_supervision = ? "
-                + "AND estado = 'INICIADO'";
+            // 1. Cambiar el estado y registrar el historial (única función
+            // utilitaria para cambiar Supervisiones.estado en todo el sistema)
+            dao.SupervisionDAO.actualizarEstadoYHistorial(con, idSupervision, "INICIADO", "EJECUTADO",
+                    "Finalización de visita con 4 PDF", null, false);
 
-            try (PreparedStatement ps =
-                    con.prepareStatement(sqlActualizar)) {
-
-                ps.setInt(1, idSupervision);
-
-int filasActualizadas = ps.executeUpdate();
-
-if (filasActualizadas != 1) {
-    throw new SQLException(
-        "No se pudo actualizar la supervisión con ID: "
-        + idSupervision
-        + ". Verifique que exista y esté en estado INICIADO."
-    );
-}
-            }
-
-            // 2. Obtener el supervisor responsable
-            String cuiResponsable = null;
-
-            String sqlSupervisor =
-                "SELECT cui_supervisor FROM dbo.Supervisiones "
-                + "WHERE id_supervision = ?";
-
-            try (PreparedStatement ps =
-                    con.prepareStatement(sqlSupervisor)) {
-
-                ps.setInt(1, idSupervision);
-
-                try (ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        cuiResponsable = rs.getString("cui_supervisor");
-                    }
-                }
-            }
-
-            if (cuiResponsable == null) {
-                throw new SQLException("Supervisor no encontrado.");
-            }
-
-            // 3. Crear carpeta para los documentos
+            // 2. Crear carpeta para los documentos
             Path carpeta = Paths.get(
                 "documentos",
                 "supervision_" + idSupervision
@@ -213,7 +171,7 @@ if (filasActualizadas != 1) {
 
             Files.createDirectories(carpeta);
 
-            // 4. Copiar y registrar los cuatro PDF
+            // 3. Copiar y registrar los cuatro PDF
             String sqlDocumento =
                 "INSERT INTO dbo.Documentos_Supervision "
                 + "(id_supervision, tipo_documento, ruta_archivo) "
@@ -243,25 +201,6 @@ if (filasActualizadas != 1) {
 
                     ps.executeUpdate();
                 }
-            }
-
-            // 5. Registrar cambio en historial
-            String sqlHistorial =
-                "INSERT INTO dbo.Historial_Supervision "
-                + "(id_supervision, estado_anterior, "
-                + "estado_nuevo, motivo_cambio, responsable_cui) "
-                + "VALUES (?, ?, ?, ?, ?)";
-
-            try (PreparedStatement ps =
-                    con.prepareStatement(sqlHistorial)) {
-
-                ps.setInt(1, idSupervision);
-                ps.setString(2, "INICIADO");
-                ps.setString(3, "EJECUTADO");
-                ps.setString(4, "Finalización de visita con 4 PDF");
-                ps.setString(5, cuiResponsable);
-
-                ps.executeUpdate();
             }
 
             con.commit();
@@ -321,10 +260,9 @@ if (filasActualizadas != 1) {
         btn4 = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Finalizar visita");
 
         jLabel1.setText("Financiera");
 
@@ -360,30 +298,6 @@ if (filasActualizadas != 1) {
 
         btnGuardar.setText("Guardar (estado EJECUTADO");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
-
-        jPanel1.setBackground(new java.awt.Color(51, 153, 255));
-        jPanel1.setForeground(new java.awt.Color(255, 255, 255));
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Finalizar visita");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 134, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(23, Short.MAX_VALUE)
-                .addComponent(jLabel5)
-                .addContainerGap())
-        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -429,13 +343,11 @@ if (filasActualizadas != 1) {
                                             .addComponent(btn4, javax.swing.GroupLayout.Alignment.TRAILING)
                                             .addComponent(btn3, javax.swing.GroupLayout.Alignment.TRAILING))))))))
                 .addContainerGap(27, Short.MAX_VALUE))
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(55, 55, 55)
+                .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(txtFinanciera, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1)
@@ -552,8 +464,6 @@ verificarArchivos();
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JTextField txtAdministrativa;
     private javax.swing.JTextField txtFinanciera;
     private javax.swing.JTextField txtOficina;

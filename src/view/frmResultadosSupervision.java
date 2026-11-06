@@ -1,6 +1,6 @@
 /*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
+ * Autor: Andrea Sofia Guerrero Castro
+ * Carné: 9490-25-14813
  */
 package view;
 
@@ -29,9 +29,8 @@ import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
-public class frmResultadosSupervision extends javax.swing.JFrame {
+public class frmResultadosSupervision extends javax.swing.JInternalFrame {
     
-    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(frmResultadosSupervision.class.getName());
 
     /**
      * Creates new form frmResultadosSupervision
@@ -87,8 +86,6 @@ public frmResultadosSupervision(int idSupervision) {
 
     this.idSupervision = idSupervision;
 
-    setLocationRelativeTo(null);
-
     cargarDatosSupervision();
     cargarResultadosGuardados();
 }
@@ -105,7 +102,7 @@ private void cargarDatosSupervision() {
         + "WHERE s.id_supervision = ? "
         + "AND s.estado = 'EJECUTADO'";
 
-    try (Connection con = clsConnection.getConexion()) {
+    try (Connection con = clsConnection.ConnectionDB()) {
 
         if (con == null) {
             JOptionPane.showMessageDialog(this,
@@ -445,13 +442,16 @@ private void cargarResultadosGuardados() {
         btnPrincipal = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
         btnDocumento = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
-        jLabel8 = new javax.swing.JLabel();
         datePresentacion = new com.toedter.calendar.JDateChooser();
         dateLimite = new com.toedter.calendar.JDateChooser();
         btnGenerarEnlace = new javax.swing.JButton();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setClosable(true);
+        setIconifiable(true);
+        setMaximizable(true);
+        setResizable(true);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Resultados de Supervisión");
 
         jLabel1.setText("Supervisor");
 
@@ -491,6 +491,7 @@ private void cargarResultadosGuardados() {
         jScrollPane2.setViewportView(txtObservaciones);
 
         btnPrincipal.setText("Menú principal");
+        btnPrincipal.addActionListener(this::btnPrincipalActionPerformed);
 
         btnGuardar.setText("Guardar (CREADO)");
         btnGuardar.addActionListener(this::btnGuardarActionPerformed);
@@ -500,30 +501,6 @@ private void cargarResultadosGuardados() {
         btnDocumento.setForeground(new java.awt.Color(255, 255, 255));
         btnDocumento.setText("Generar documento (RESULTADOS)");
         btnDocumento.addActionListener(this::btnDocumentoActionPerformed);
-
-        jPanel1.setBackground(new java.awt.Color(51, 153, 255));
-
-        jLabel8.setBackground(new java.awt.Color(255, 255, 255));
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel8.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel8.setText("Resultados de Supervisión");
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 257, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(19, Short.MAX_VALUE)
-                .addComponent(jLabel8)
-                .addContainerGap())
-        );
 
         btnGenerarEnlace.setText("Generar enlace");
         btnGenerarEnlace.addActionListener(this::btnGenerarEnlaceActionPerformed);
@@ -573,15 +550,13 @@ private void cargarResultadosGuardados() {
                                     .addComponent(jLabel4)))
                             .addComponent(txtEnlace, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.PREFERRED_SIZE, 621, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(36, Short.MAX_VALUE))
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
+                        .addContainerGap()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel1)
                             .addComponent(jLabel2)
@@ -625,6 +600,10 @@ private void cargarResultadosGuardados() {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnPrincipalActionPerformed(java.awt.event.ActionEvent evt) {
+        dispose();
+    }
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 guardarResultados();
@@ -770,31 +749,6 @@ try {
 
     }//GEN-LAST:event_btnDocumentoActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ReflectiveOperationException | javax.swing.UnsupportedLookAndFeelException ex) {
-            logger.log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(() -> new frmResultadosSupervision(3).setVisible(true));
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnDocumento;
@@ -812,8 +766,6 @@ try {
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tablaHallazgos;

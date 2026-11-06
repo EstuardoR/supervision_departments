@@ -1,4 +1,7 @@
-
+/*
+ * Autor: Andrea Sofia Guerrero Castro
+ * Carné: 9490-25-14813
+ */
 package dao;
 
 import java.sql.Connection;
@@ -39,7 +42,7 @@ public class clsInformeFinal {
                     "Debe seleccionar al menos un hallazgo.");
         }
 
-        try (Connection con = clsConnection.getConexion()) {
+        try (Connection con = clsConnection.ConnectionDB()) {
 
             if (con == null) {
                 throw new SQLException(
@@ -131,7 +134,8 @@ public class clsInformeFinal {
 
                     // Limpiar selecciones anteriores
                     String sqlEliminar =
-                            "DELETE FROM dbo.Informe_Hallazgos "
+                            "UPDATE dbo.Detalle_Resultados "
+                            + "SET id_informe = NULL "
                             + "WHERE id_informe = ?";
 
                     try (PreparedStatement ps =
@@ -145,9 +149,7 @@ public class clsInformeFinal {
                 // Guardar hallazgos seleccionados
                 // Verificar que pertenezcan a esta supervisión
                 String sqlHallazgo =
-                        "INSERT INTO dbo.Informe_Hallazgos "
-                        + "(id_informe, id_detalle_resultado) "
-                        + "SELECT ?, d.id_detalle_resultado "
+                        "UPDATE d SET d.id_informe = ? "
                         + "FROM dbo.Detalle_Resultados d "
                         + "INNER JOIN dbo.Resultados_Supervision r "
                         + "ON d.id_resultado = r.id_resultado "
@@ -201,7 +203,7 @@ public class clsInformeFinal {
 public InformeGuardado cargarInforme(
         int idSupervision) throws SQLException {
 
-    try (Connection con = clsConnection.getConexion()) {
+    try (Connection con = clsConnection.ConnectionDB()) {
 
         if (con == null) {
             throw new SQLException(
@@ -250,7 +252,7 @@ public InformeGuardado cargarInforme(
         // Recuperar los hallazgos incluidos
         String sqlHallazgos =
                 "SELECT id_detalle_resultado "
-                + "FROM dbo.Informe_Hallazgos "
+                + "FROM dbo.Detalle_Resultados "
                 + "WHERE id_informe = ?";
 
         try (PreparedStatement ps =
@@ -282,10 +284,10 @@ public boolean puedeGenerarDocumento(
         + "WHERE i.id_supervision = ? "
         + "AND i.estado_informe = 'CREADO' "
         + "AND EXISTS ("
-        + "SELECT 1 FROM dbo.Informe_Hallazgos ih "
-        + "WHERE ih.id_informe = i.id_informe)";
+        + "SELECT 1 FROM dbo.Detalle_Resultados d "
+        + "WHERE d.id_informe = i.id_informe)";
 
-    try (Connection con = clsConnection.getConexion()) {
+    try (Connection con = clsConnection.ConnectionDB()) {
 
         if (con == null) {
             throw new SQLException(
