@@ -21,12 +21,13 @@ public class ControlAcceso {
     public static final String FRM_INFORME_FINAL = "frmInformeFinal";
     public static final String FRM_MATRIZ_SEGUIMIENTO = "frmMatrizSeguimiento";
     public static final String FRM_REPORTES = "frmReportes";
+    public static final String FRM_USUARIOS = "frmUsuarios";
 
     private static final Map<String, Set<String>> PANTALLAS_POR_PERFIL = new HashMap<>();
 
     static {
         PANTALLAS_POR_PERFIL.put("ADMINISTRADOR", Set.of(
-                FRM_REPORTES));
+                FRM_REPORTES, FRM_USUARIOS));
 
         PANTALLAS_POR_PERFIL.put("DIRECTOR_DCI", Set.of(
                 FRM_ASIGNACION_SUPERVISION, FRM_BANDEJA_PLANIFICACION, FRM_REPORTES));

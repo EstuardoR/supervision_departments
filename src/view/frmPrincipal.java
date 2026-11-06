@@ -42,6 +42,7 @@ public class frmPrincipal extends javax.swing.JFrame {
         mnuInformeFinal.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_INFORME_FINAL));
         mnuMatrizSeguimiento.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_MATRIZ_SEGUIMIENTO));
         mnuAcciones.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_ACCIONES));
+        mnuUsuarios.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_USUARIOS));
         mnuIndicadores.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_REPORTES));
 
         ocultarMenuSiVacio(mnuAdministracion);
@@ -148,6 +149,12 @@ public class frmPrincipal extends javax.swing.JFrame {
         pantalla.setVisible(true);
     }
 
+    private void mnuUsuariosActionPerformed(java.awt.event.ActionEvent evt) {
+        view.frmUsuarios pantalla = new view.frmUsuarios();
+        desktop.add(pantalla);
+        pantalla.setVisible(true);
+    }
+
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {
         int respuesta = javax.swing.JOptionPane.showConfirmDialog(this,
                 "¿Desea cerrar la sesión actual?", "Cerrar sesión",
@@ -172,6 +179,7 @@ public class frmPrincipal extends javax.swing.JFrame {
         menuBar = new javax.swing.JMenuBar();
         mnuAdministracion = new javax.swing.JMenu();
         mnuAcciones = new javax.swing.JMenuItem();
+        mnuUsuarios = new javax.swing.JMenuItem();
         mnuSupervision = new javax.swing.JMenu();
         mnuAsignacionSupervision = new javax.swing.JMenuItem();
         mnuListarSupervisiones = new javax.swing.JMenuItem();
@@ -199,6 +207,14 @@ public class frmPrincipal extends javax.swing.JFrame {
             }
         });
         mnuAdministracion.add(mnuAcciones);
+
+        mnuUsuarios.setText("Usuarios");
+        mnuUsuarios.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuUsuariosActionPerformed(evt);
+            }
+        });
+        mnuAdministracion.add(mnuUsuarios);
 
         menuBar.add(mnuAdministracion);
 
@@ -353,6 +369,7 @@ public class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuResultadosSupervision;
     private javax.swing.JMenu mnuReportes;
     private javax.swing.JMenu mnuSupervision;
+    private javax.swing.JMenuItem mnuUsuarios;
     private javax.swing.JPanel pnlEstado;
     // End of variables declaration//GEN-END:variables
 }

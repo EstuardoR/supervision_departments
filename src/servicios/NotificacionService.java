@@ -1,3 +1,7 @@
+/*
+ * Autor: María José Pelicó López
+ * Carné: 9490-25-11528
+ */
 package servicios;
 
 import jakarta.mail.Authenticator;
@@ -20,11 +24,10 @@ import java.util.Properties;
  */
 public class NotificacionService {
 
-    // TODO: cambiar por los datos reales
     private static final String SMTP_HOST = "smtp.gmail.com";
     private static final String SMTP_PORT = "587";
-    private static final String REMITENTE = "tu_correo@gmail.com";
-    private static final String CLAVE_APP = "tu_clave_de_aplicacion";
+    private static final String REMITENTE = "supervisionesdci@gmail.com";
+    private static final String CLAVE_APP = "dqjbwkclrxdgcgmf";
 
     private NotificacionService() {
     }

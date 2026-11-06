@@ -35,9 +35,6 @@ GO
 -- ============================================================================
 -- 2. ELIMINACIÓN DE TABLAS EXISTENTES (orden: hijas -> padres)
 -- ============================================================================
-IF OBJECT_ID(N'dbo.Informe_Supervision', 'U') IS NOT NULL
-    DROP TABLE dbo.Informe_Supervision;
-
 IF OBJECT_ID(N'dbo.Detalle_Cinco_Porque', 'U') IS NOT NULL
     DROP TABLE dbo.Detalle_Cinco_Porque;
 
@@ -47,8 +44,13 @@ IF OBJECT_ID(N'dbo.Analisis_Causa_Raiz', 'U') IS NOT NULL
 IF OBJECT_ID(N'dbo.Acciones_Preventivas_Correctivas', 'U') IS NOT NULL
     DROP TABLE dbo.Acciones_Preventivas_Correctivas;
 
+-- Detalle_Resultados tiene id_informe, que referencia a Informe_Supervision
+-- (ver sección 3, al final), así que debe eliminarse antes que esa tabla.
 IF OBJECT_ID(N'dbo.Detalle_Resultados', 'U') IS NOT NULL
     DROP TABLE dbo.Detalle_Resultados;
+
+IF OBJECT_ID(N'dbo.Informe_Supervision', 'U') IS NOT NULL
+    DROP TABLE dbo.Informe_Supervision;
 
 IF OBJECT_ID(N'dbo.Resultados_Supervision', 'U') IS NOT NULL
     DROP TABLE dbo.Resultados_Supervision;
@@ -238,6 +240,19 @@ CREATE TABLE dbo.Informe_Supervision (
     CONSTRAINT FK_Informe_Supervisiones FOREIGN KEY (id_supervision) REFERENCES dbo.Supervisiones (id_supervision)
 );
 
+
+GO
+-- Detalle_Resultados.id_informe ------------------------------------------------
+-- Se agrega aquí (en vez de en el CREATE TABLE de Detalle_Resultados, más arriba)
+-- porque Informe_Supervision todavía no existía en ese punto del script. Guarda
+-- qué hallazgo quedó incluido en el informe final de la supervisión: cada
+-- hallazgo solo puede pertenecer a un informe a la vez (cada supervisión tiene
+-- a lo sumo un Informe_Supervision), así que basta con esta columna nullable
+-- en vez de una tabla puente (Informe_Hallazgos). La usa dao.clsInformeFinal.
+ALTER TABLE dbo.Detalle_Resultados
+    ADD id_informe INT NULL
+        CONSTRAINT FK_DetalleResultados_Informe
+        REFERENCES dbo.Informe_Supervision (id_informe);
 
 GO
 -- ============================================================================
