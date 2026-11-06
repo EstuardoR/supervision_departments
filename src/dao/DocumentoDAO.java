@@ -36,4 +36,25 @@ public class DocumentoDAO {
             }
         }
     }
+
+    /** Registra un documento generado por el sistema para una supervisión. */
+    public void registrar(int idSupervision, String tipoDocumento, String rutaArchivo) throws SQLException {
+        String sql = "INSERT INTO dbo.Documentos_Supervision (id_supervision, tipo_documento, ruta_archivo) "
+                + "VALUES (?, ?, ?)";
+        Connection conn = util.clsConnection.ConnectionDB();
+        if (conn == null) {
+            throw new SQLException("No se pudo establecer conexión con la base de datos.");
+        }
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idSupervision);
+            ps.setString(2, tipoDocumento);
+            ps.setString(3, rutaArchivo);
+            ps.executeUpdate();
+        } finally {
+            try {
+                conn.close();
+            } catch (SQLException ignored) {
+            }
+        }
+    }
 }

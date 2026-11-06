@@ -37,6 +37,8 @@
                       <Component id="btnGuardar" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="btnDocumento" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="separate" max="-2" attributes="0"/>
+                      <Component id="btnVisualizar" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <Group type="103" alignment="1" groupAlignment="0" attributes="0">
                       <Component id="jLabel7" min="-2" pref="143" max="-2" attributes="0"/>
@@ -134,6 +136,7 @@
                   <Component id="btnPrincipal" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnGuardar" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="btnDocumento" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnVisualizar" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
           </Group>
@@ -311,6 +314,14 @@
     <Component class="com.toedter.calendar.JDateChooser" name="datePresentacion">
     </Component>
     <Component class="com.toedter.calendar.JDateChooser" name="dateLimite">
+    </Component>
+    <Component class="javax.swing.JButton" name="btnVisualizar">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Visualizar documento"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnVisualizarActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnGenerarEnlace">
       <Properties>

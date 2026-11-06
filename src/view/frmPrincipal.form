@@ -40,6 +40,16 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Administraci&#xf3;n"/>
           </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="mnuAcciones">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Acciones"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuAccionesActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="mnuSupervision">
           <Properties>
@@ -93,6 +103,14 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuInformeFinalActionPerformed"/>
               </Events>
             </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mnuMatrizSeguimiento">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Matriz de seguimiento"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuMatrizSeguimientoActionPerformed"/>
+              </Events>
+            </MenuItem>
           </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="mnuReportes">
@@ -136,6 +154,8 @@
                   <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
                   <Component id="lblRol" min="-2" max="-2" attributes="0"/>
                   <EmptySpace pref="100" max="32767" attributes="0"/>
+                  <Component id="btnCerrarSesion" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace min="-2" pref="10" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -146,6 +166,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="lblUsuario" min="-2" max="-2" attributes="0"/>
                       <Component id="lblRol" min="-2" max="-2" attributes="0"/>
+                      <Component id="btnCerrarSesion" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="6" max="-2" attributes="0"/>
               </Group>
@@ -162,6 +183,14 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Rol:"/>
           </Properties>
+        </Component>
+        <Component class="javax.swing.JButton" name="btnCerrarSesion">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Cerrar sesi&#xf3;n"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCerrarSesionActionPerformed"/>
+          </Events>
         </Component>
       </SubComponents>
     </Container>
