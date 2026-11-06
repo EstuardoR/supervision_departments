@@ -68,6 +68,32 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="Gesti&#xf3;n"/>
           </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="mnuEjecucionCampo">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Ejecuci&#xf3;n de campo"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuEjecucionCampoActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mnuResultadosSupervision">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Resultados de supervisi&#xf3;n"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuResultadosSupervisionActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="mnuInformeFinal">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Informe final"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="mnuInformeFinalActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
         </Menu>
         <Menu class="javax.swing.JMenu" name="mnuReportes">
           <Properties>

@@ -45,7 +45,7 @@ public class BandejaPlanificacionController {
     /** Aprueba (firma) una supervisión en estado PROGRAMADO, dejándola en APROBADO. */
     public void aprobar(int idSupervision) throws BandejaPlanificacionException {
         try {
-            SupervisionDAO.cambiarEstado(idSupervision, "APROBADO", "Aprobación (firma) del nombramiento");
+            SupervisionDAO.cambiarEstado(idSupervision, "PROGRAMADO", "APROBADO", "Aprobación (firma) del nombramiento");
         } catch (SupervisionException e) {
             throw new BandejaPlanificacionException(e.getMessage(), e);
         }
