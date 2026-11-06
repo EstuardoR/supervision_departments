@@ -588,11 +588,12 @@ public class frmBandejaPlanificacion extends javax.swing.JInternalFrame {
             return;
         }
         try {
-            new controller.BandejaPlanificacionController().registrarRecepcion(seleccionado.getIdSupervision());
-            // TODO: si existe un NotificacionService, usarlo aquí para avisar por correo a
-            // Profesional DCI, Director DCI y al Supervisor de la confirmación de recepción.
-            javax.swing.JOptionPane.showMessageDialog(this, "Recepción registrada", "Éxito",
-                    javax.swing.JOptionPane.INFORMATION_MESSAGE);
+            boolean enviado = new controller.BandejaPlanificacionController()
+                    .registrarRecepcion(seleccionado.getIdSupervision());
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "Recepción registrada.\n"
+                    + (enviado ? "Se notificó por correo." : "No se pudo enviar el correo de notificación."),
+                    "Éxito", javax.swing.JOptionPane.INFORMATION_MESSAGE);
             buscar();
         } catch (controller.BandejaPlanificacionException ex) {
             javax.swing.JOptionPane.showMessageDialog(this, ex.getMessage(), "Error",

@@ -311,5 +311,27 @@ public boolean puedeGenerarDocumento(
     return false;
 }
 
+/** Marca el informe como enviado, una vez generado y firmado el documento. */
+public void marcarComoEnviado(int idSupervision) throws SQLException {
+
+    String sql =
+        "UPDATE dbo.Informe_Supervision "
+        + "SET estado_informe = 'ENVIADO' "
+        + "WHERE id_supervision = ? AND estado_informe = 'CREADO'";
+
+    try (Connection con = clsConnection.ConnectionDB()) {
+
+        if (con == null) {
+            throw new SQLException(
+                "No se pudo conectar con SQL Server.");
+        }
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idSupervision);
+            ps.executeUpdate();
+        }
+    }
+}
+
 
 }

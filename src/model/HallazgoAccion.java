@@ -1,3 +1,7 @@
+/*
+ * Autor: María José Pelicó López
+ * Carné: 9490-25-11528
+ */
 package model;
 
 /**

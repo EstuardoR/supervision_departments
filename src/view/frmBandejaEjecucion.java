@@ -83,7 +83,7 @@ private void cargarSupervisiones() {
             estado
         FROM dbo.Supervisiones
         WHERE cui_supervisor = ?
-        AND estado IN ('APROBADO', 'INICIADO', 'EJECUTADO')
+        AND estado IN ('APROBADO', 'INICIADO', 'EJECUTADO', 'ACCIONES')
         ORDER BY fecha_inicio_comision DESC
         """;
 
@@ -150,7 +150,7 @@ private void verificarSeleccion() {
 
     btnResultados.setEnabled(estado.equals("EJECUTADO"));
 
-    btnInforme.setEnabled(estado.equals("EJECUTADO"));
+    btnInforme.setEnabled(estado.equals("ACCIONES"));
 }
 
 private void btnResultadosActionPerformed(java.awt.event.ActionEvent evt) {

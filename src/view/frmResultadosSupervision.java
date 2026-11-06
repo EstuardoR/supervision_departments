@@ -28,9 +28,17 @@ import java.time.ZoneId;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import dao.SupervisionDAO;
+import dao.SupervisionException;
+import dao.DocumentoDAO;
+import java.io.IOException;
+import servicios.FirmaService;
+import servicios.GeneradorDocumentoService;
 
 public class frmResultadosSupervision extends javax.swing.JInternalFrame {
-    
+
+    private static final String TIPO_ANEXO_II = "Anexo II - Resultados de la supervision";
+
 
     /**
      * Creates new form frmResultadosSupervision
@@ -445,6 +453,7 @@ private void cargarResultadosGuardados() {
         datePresentacion = new com.toedter.calendar.JDateChooser();
         dateLimite = new com.toedter.calendar.JDateChooser();
         btnGenerarEnlace = new javax.swing.JButton();
+        btnVisualizar = new javax.swing.JButton();
 
         setClosable(true);
         setIconifiable(true);
@@ -505,6 +514,9 @@ private void cargarResultadosGuardados() {
         btnGenerarEnlace.setText("Generar enlace");
         btnGenerarEnlace.addActionListener(this::btnGenerarEnlaceActionPerformed);
 
+        btnVisualizar.setText("Visualizar documento");
+        btnVisualizar.addActionListener(this::btnVisualizarActionPerformed);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -517,7 +529,9 @@ private void cargarResultadosGuardados() {
                         .addGap(31, 31, 31)
                         .addComponent(btnGuardar)
                         .addGap(18, 18, 18)
-                        .addComponent(btnDocumento))
+                        .addComponent(btnDocumento)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnVisualizar))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 143, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 754, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -594,7 +608,8 @@ private void cargarResultadosGuardados() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPrincipal)
                     .addComponent(btnGuardar)
-                    .addComponent(btnDocumento))
+                    .addComponent(btnDocumento)
+                    .addComponent(btnVisualizar))
                 .addGap(18, 18, 18))
         );
 
@@ -734,11 +749,40 @@ try {
         return;
     }
 
+    if (!FirmaService.firmar(this)) {
+        return;
+    }
+
+    SupervisionDAO.cambiarEstado(idSupervision, "EJECUTADO", "RESULTADOS",
+            "Resultados firmados. Código de firma " + FirmaService.getUltimoCodigo());
+    dao.marcarComoEnviado(idSupervision);
+
+    try {
+        String cuerpo = "<table>"
+                + "<tr><th>No. de supervisión</th><td>" + idSupervision + "</td></tr>"
+                + "<tr><th>Supervisor</th><td>" + txtSupervisor.getText() + "</td></tr>"
+                + "<tr><th>Lugar supervisado</th><td>" + txtLugar.getText() + "</td></tr>"
+                + "<tr><th>Enlace de videoconferencia</th><td>" + txtEnlace.getText() + "</td></tr>"
+                + "<tr><th>Observaciones</th><td>" + txtObservaciones.getText() + "</td></tr>"
+                + "</table>"
+                + "<p class=\"firma\">Firmado el " + FirmaService.getUltimaFechaHora()
+                + " — Código de firma: " + FirmaService.getUltimoCodigo() + "</p>";
+        String ruta = GeneradorDocumentoService.generar(idSupervision, "Anexo_II_Resultados",
+                "Anexo II - Resultados de la supervisión", cuerpo);
+        new DocumentoDAO().registrar(idSupervision, TIPO_ANEXO_II, ruta);
+    } catch (IOException | SQLException ex) {
+        // No se deshace el cambio de estado si falla la generación del documento.
+    }
+
     JOptionPane.showMessageDialog(this,
-            "Los resultados están listos para generar "
-            + "el documento PDF.\n"
-            + "Pendiente de integrar el servicio "
-            + "de documentos y firma del Integrante 3.");
+            "Documento generado y firmado. La supervisión pasó a RESULTADOS.\n"
+            + "Código de firma: " + FirmaService.getUltimoCodigo());
+
+} catch (SupervisionException e) {
+
+    String detalle = e.getCause() != null ? "\n" + e.getCause().getMessage() : "";
+    JOptionPane.showMessageDialog(this,
+            "No se pudo generar el documento:\n" + e.getMessage() + detalle);
 
 } catch (SQLException e) {
 
@@ -749,6 +793,22 @@ try {
 
     }//GEN-LAST:event_btnDocumentoActionPerformed
 
+    private void btnVisualizarActionPerformed(java.awt.event.ActionEvent evt) {
+        if (idSupervision <= 0) {
+            JOptionPane.showMessageDialog(this, "No se recibió una supervisión válida.");
+            return;
+        }
+        try {
+            String ruta = new DocumentoDAO().buscarRuta(idSupervision, TIPO_ANEXO_II);
+            if (ruta == null || !GeneradorDocumentoService.abrir(ruta)) {
+                JOptionPane.showMessageDialog(this,
+                        "Todavía no se ha generado el documento de esta supervisión.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo consultar el documento:\n" + e.getMessage());
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
     private javax.swing.JButton btnDocumento;
@@ -757,6 +817,7 @@ try {
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnPrincipal;
     private javax.swing.JButton btnQuitar;
+    private javax.swing.JButton btnVisualizar;
     private com.toedter.calendar.JDateChooser dateLimite;
     private com.toedter.calendar.JDateChooser datePresentacion;
     private javax.swing.JLabel jLabel1;

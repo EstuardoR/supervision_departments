@@ -40,6 +40,8 @@ public class frmPrincipal extends javax.swing.JFrame {
         mnuEjecucionCampo.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_BANDEJA_EJECUCION));
         mnuResultadosSupervision.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_RESULTADOS_SUPERVISION));
         mnuInformeFinal.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_INFORME_FINAL));
+        mnuMatrizSeguimiento.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_MATRIZ_SEGUIMIENTO));
+        mnuAcciones.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_ACCIONES));
         mnuIndicadores.setVisible(util.ControlAcceso.tieneAcceso(perfil, util.ControlAcceso.FRM_REPORTES));
 
         ocultarMenuSiVacio(mnuAdministracion);
@@ -85,15 +87,77 @@ public class frmPrincipal extends javax.swing.JFrame {
     }
 
     private void mnuResultadosSupervisionActionPerformed(java.awt.event.ActionEvent evt) {
-        view.frmResultadosSupervision pantalla = new view.frmResultadosSupervision();
+        abrirConSeleccionDeSupervision("EJECUTADO", idSupervision -> {
+            view.frmResultadosSupervision pantalla = new view.frmResultadosSupervision(idSupervision);
+            desktop.add(pantalla);
+            pantalla.setVisible(true);
+        });
+    }
+
+    private void mnuInformeFinalActionPerformed(java.awt.event.ActionEvent evt) {
+        abrirConSeleccionDeSupervision("ACCIONES", idSupervision -> {
+            view.frmInformeFinal pantalla = new view.frmInformeFinal(idSupervision);
+            desktop.add(pantalla);
+            pantalla.setVisible(true);
+        });
+    }
+
+    /**
+     * Muestra un selector con las supervisiones del supervisor en sesión que estén en el
+     * estado indicado, y abre la pantalla recibida con el ID elegido. Se usa para los accesos
+     * de Resultados/Informe final del menú principal, que (a diferencia de Acciones/Matriz de
+     * seguimiento) no traen su propia tabla de selección.
+     */
+    private void abrirConSeleccionDeSupervision(String estado, java.util.function.IntConsumer abrirPantalla) {
+        try {
+            model.Usuario usuario = util.Sesion.getInstancia().getUsuarioActual();
+            String cui = (usuario != null) ? usuario.getCui() : null;
+            java.util.List<Object[]> filas = dao.AccionDAO.listarSupervisiones(estado, cui, null, false);
+            if (filas.isEmpty()) {
+                javax.swing.JOptionPane.showMessageDialog(this,
+                        "No hay supervisiones en estado " + estado + " asignadas a usted.");
+                return;
+            }
+            Object[] opciones = filas.stream()
+                    .map(fila -> fila[0] + " - " + fila[1] + " (" + fila[2] + ")")
+                    .toArray();
+            Object seleccion = javax.swing.JOptionPane.showInputDialog(this,
+                    "Seleccione una supervisión:", "Supervisiones en " + estado,
+                    javax.swing.JOptionPane.PLAIN_MESSAGE, null, opciones, opciones[0]);
+            if (seleccion == null) {
+                return;
+            }
+            int indice = java.util.Arrays.asList(opciones).indexOf(seleccion);
+            int idSupervision = (Integer) filas.get(indice)[0];
+            abrirPantalla.accept(idSupervision);
+        } catch (dao.SupervisionException e) {
+            javax.swing.JOptionPane.showMessageDialog(this,
+                    "No se pudieron listar las supervisiones: " + e.getMessage());
+        }
+    }
+
+    private void mnuMatrizSeguimientoActionPerformed(java.awt.event.ActionEvent evt) {
+        view.frmMatrizSeguimiento pantalla = new view.frmMatrizSeguimiento();
         desktop.add(pantalla);
         pantalla.setVisible(true);
     }
 
-    private void mnuInformeFinalActionPerformed(java.awt.event.ActionEvent evt) {
-        view.frmInformeFinal pantalla = new view.frmInformeFinal();
+    private void mnuAccionesActionPerformed(java.awt.event.ActionEvent evt) {
+        view.frmAcciones pantalla = new view.frmAcciones();
         desktop.add(pantalla);
         pantalla.setVisible(true);
+    }
+
+    private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {
+        int respuesta = javax.swing.JOptionPane.showConfirmDialog(this,
+                "¿Desea cerrar la sesión actual?", "Cerrar sesión",
+                javax.swing.JOptionPane.YES_NO_OPTION);
+        if (respuesta != javax.swing.JOptionPane.YES_OPTION) {
+            return;
+        }
+        util.Sesion.getInstancia().cerrarSesion();
+        new view.frmLogin().setVisible(true);
+        this.dispose();
     }
 
     /**
@@ -107,6 +171,7 @@ public class frmPrincipal extends javax.swing.JFrame {
 
         menuBar = new javax.swing.JMenuBar();
         mnuAdministracion = new javax.swing.JMenu();
+        mnuAcciones = new javax.swing.JMenuItem();
         mnuSupervision = new javax.swing.JMenu();
         mnuAsignacionSupervision = new javax.swing.JMenuItem();
         mnuListarSupervisiones = new javax.swing.JMenuItem();
@@ -114,16 +179,27 @@ public class frmPrincipal extends javax.swing.JFrame {
         mnuEjecucionCampo = new javax.swing.JMenuItem();
         mnuResultadosSupervision = new javax.swing.JMenuItem();
         mnuInformeFinal = new javax.swing.JMenuItem();
+        mnuMatrizSeguimiento = new javax.swing.JMenuItem();
         mnuReportes = new javax.swing.JMenu();
         mnuIndicadores = new javax.swing.JMenuItem();
         desktop = new javax.swing.JDesktopPane();
         pnlEstado = new javax.swing.JPanel();
         lblUsuario = new javax.swing.JLabel();
         lblRol = new javax.swing.JLabel();
+        btnCerrarSesion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         mnuAdministracion.setText("Administración");
+
+        mnuAcciones.setText("Acciones");
+        mnuAcciones.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuAccionesActionPerformed(evt);
+            }
+        });
+        mnuAdministracion.add(mnuAcciones);
+
         menuBar.add(mnuAdministracion);
 
         mnuSupervision.setText("Supervisión");
@@ -172,6 +248,14 @@ public class frmPrincipal extends javax.swing.JFrame {
         });
         mnuGestion.add(mnuInformeFinal);
 
+        mnuMatrizSeguimiento.setText("Matriz de seguimiento");
+        mnuMatrizSeguimiento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                mnuMatrizSeguimientoActionPerformed(evt);
+            }
+        });
+        mnuGestion.add(mnuMatrizSeguimiento);
+
         menuBar.add(mnuGestion);
 
         mnuReportes.setText("Reportes");
@@ -203,6 +287,13 @@ public class frmPrincipal extends javax.swing.JFrame {
 
         lblRol.setText("Rol:");
 
+        btnCerrarSesion.setText("Cerrar sesión");
+        btnCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCerrarSesionActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout pnlEstadoLayout = new javax.swing.GroupLayout(pnlEstado);
         pnlEstado.setLayout(pnlEstadoLayout);
         pnlEstadoLayout.setHorizontalGroup(
@@ -212,7 +303,9 @@ public class frmPrincipal extends javax.swing.JFrame {
                 .addComponent(lblUsuario)
                 .addGap(40, 40, 40)
                 .addComponent(lblRol)
-                .addContainerGap(100, Short.MAX_VALUE))
+                .addContainerGap(100, Short.MAX_VALUE)
+                .addComponent(btnCerrarSesion)
+                .addGap(10, 10, 10))
         );
         pnlEstadoLayout.setVerticalGroup(
             pnlEstadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -220,7 +313,8 @@ public class frmPrincipal extends javax.swing.JFrame {
                 .addGap(6, 6, 6)
                 .addGroup(pnlEstadoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(lblUsuario)
-                    .addComponent(lblRol))
+                    .addComponent(lblRol)
+                    .addComponent(btnCerrarSesion))
                 .addGap(6, 6, 6))
         );
 
@@ -242,10 +336,12 @@ public class frmPrincipal extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JDesktopPane desktop;
     private javax.swing.JLabel lblRol;
     private javax.swing.JLabel lblUsuario;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JMenuItem mnuAcciones;
     private javax.swing.JMenu mnuAdministracion;
     private javax.swing.JMenuItem mnuAsignacionSupervision;
     private javax.swing.JMenuItem mnuEjecucionCampo;
@@ -253,6 +349,7 @@ public class frmPrincipal extends javax.swing.JFrame {
     private javax.swing.JMenuItem mnuIndicadores;
     private javax.swing.JMenuItem mnuInformeFinal;
     private javax.swing.JMenuItem mnuListarSupervisiones;
+    private javax.swing.JMenuItem mnuMatrizSeguimiento;
     private javax.swing.JMenuItem mnuResultadosSupervision;
     private javax.swing.JMenu mnuReportes;
     private javax.swing.JMenu mnuSupervision;

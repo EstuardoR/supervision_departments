@@ -17,9 +17,17 @@ import javax.swing.ListSelectionModel;
 import dao.clsInformeFinal;
 import java.util.ArrayList;
 import java.util.List;
+import dao.SupervisionDAO;
+import dao.SupervisionException;
+import dao.DocumentoDAO;
+import java.io.IOException;
+import servicios.FirmaService;
+import servicios.GeneradorDocumentoService;
 
 
 public class frmInformeFinal extends javax.swing.JInternalFrame {
+
+    private static final String TIPO_ANEXO_IV = "Anexo IV - Informe de supervision";
 
     /**
      * Creates new form frmInformeFinal
@@ -418,6 +426,7 @@ private void cargarInformeGuardado() {
         btnPrincipal = new javax.swing.JButton();
         btnGuardar = new javax.swing.JButton();
         btnDocumento = new javax.swing.JButton();
+        btnVisualizar = new javax.swing.JButton();
         txtLugar = new javax.swing.JTextField();
         txtInicial = new javax.swing.JTextField();
         txtFinal = new javax.swing.JTextField();
@@ -479,6 +488,9 @@ private void cargarInformeGuardado() {
         btnDocumento.setText("Generar documento (INFORME)");
         btnDocumento.addActionListener(this::btnDocumentoActionPerformed);
 
+        btnVisualizar.setText("Visualizar documento");
+        btnVisualizar.addActionListener(this::btnVisualizarActionPerformed);
+
         txtLugar.setEditable(false);
 
         txtInicial.setEditable(false);
@@ -525,7 +537,9 @@ private void cargarInformeGuardado() {
                                 .addGap(18, 18, 18)
                                 .addComponent(btnGuardar)
                                 .addGap(18, 18, 18)
-                                .addComponent(btnDocumento))
+                                .addComponent(btnDocumento)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnVisualizar))
                             .addGroup(layout.createSequentialGroup()
                                 .addContainerGap()
                                 .addComponent(txtSupervisor, javax.swing.GroupLayout.PREFERRED_SIZE, 141, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -563,7 +577,8 @@ private void cargarInformeGuardado() {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnPrincipal)
                     .addComponent(btnGuardar)
-                    .addComponent(btnDocumento))
+                    .addComponent(btnDocumento)
+                    .addComponent(btnVisualizar))
                 .addGap(19, 19, 19))
         );
 
@@ -617,11 +632,41 @@ try {
         return;
     }
 
+    if (!FirmaService.firmar(this)) {
+        return;
+    }
+
+    SupervisionDAO.cambiarEstado(idSupervision, "ACCIONES", "INFORME",
+            "Informe final firmado. Código de firma " + FirmaService.getUltimoCodigo());
+    dao.marcarComoEnviado(idSupervision);
+
+    try {
+        String cuerpo = "<table>"
+                + "<tr><th>No. de supervisión</th><td>" + idSupervision + "</td></tr>"
+                + "<tr><th>Supervisor</th><td>" + txtSupervisor.getText() + "</td></tr>"
+                + "<tr><th>Lugar supervisado</th><td>" + txtLugar.getText() + "</td></tr>"
+                + "<tr><th>Alcance</th><td>" + txtInicial.getText() + " a " + txtFinal.getText() + "</td></tr>"
+                + "<tr><th>Objetivos específicos</th><td>" + txtEspecificos.getText() + "</td></tr>"
+                + "<tr><th>Documentos examinados</th><td>" + txtExaminados.getText() + "</td></tr>"
+                + "</table>"
+                + "<p class=\"firma\">Firmado el " + FirmaService.getUltimaFechaHora()
+                + " — Código de firma: " + FirmaService.getUltimoCodigo() + "</p>";
+        String ruta = GeneradorDocumentoService.generar(idSupervision, "Anexo_IV_Informe",
+                "Anexo IV - Informe de supervisión", cuerpo);
+        new DocumentoDAO().registrar(idSupervision, TIPO_ANEXO_IV, ruta);
+    } catch (IOException | SQLException ex) {
+        // No se deshace el cambio de estado si falla la generación del documento.
+    }
+
     JOptionPane.showMessageDialog(this,
-            "El informe está listo para generar "
-            + "el documento PDF.\n"
-            + "Pendiente de integrar el servicio "
-            + "de documentos y firma del Integrante 3.");
+            "Informe generado y firmado. La supervisión pasó a INFORME.\n"
+            + "Código de firma: " + FirmaService.getUltimoCodigo());
+
+} catch (SupervisionException e) {
+
+    String detalle = e.getCause() != null ? "\n" + e.getCause().getMessage() : "";
+    JOptionPane.showMessageDialog(this,
+            "No se pudo generar el informe:\n" + e.getMessage() + detalle);
 
 } catch (SQLException e) {
 
@@ -632,8 +677,25 @@ try {
 
     }//GEN-LAST:event_btnDocumentoActionPerformed
 
+    private void btnVisualizarActionPerformed(java.awt.event.ActionEvent evt) {
+        if (idSupervision <= 0) {
+            JOptionPane.showMessageDialog(this, "No se recibió una supervisión válida.");
+            return;
+        }
+        try {
+            String ruta = new DocumentoDAO().buscarRuta(idSupervision, TIPO_ANEXO_IV);
+            if (ruta == null || !GeneradorDocumentoService.abrir(ruta)) {
+                JOptionPane.showMessageDialog(this,
+                        "Todavía no se ha generado el documento de esta supervisión.");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "No se pudo consultar el documento:\n" + e.getMessage());
+        }
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnDocumento;
+    private javax.swing.JButton btnVisualizar;
     private javax.swing.JButton btnGuardar;
     private javax.swing.JButton btnPrincipal;
     private javax.swing.JLabel jLabel1;

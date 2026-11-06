@@ -14,6 +14,7 @@ import dao.SupervisionException;
 import dao.UsuarioDAO;
 import model.Supervision;
 import model.Usuario;
+import servicios.NotificacionService;
 import util.ArchivoService;
 
 /**
@@ -83,9 +84,7 @@ public class ReprogramarAnularController {
             String cuerpo = "La supervisión #" + idSupervision + " fue marcada como " + nuevoEstado
                     + ".\nMotivo: " + motivo;
 
-            // TODO: no existe un NotificacionService en el proyecto. Cuando exista, usarlo
-            // aquí para enviar 'asunto' y 'cuerpo' a cada dirección en 'correos'.
-            return true;
+            return NotificacionService.enviar(correos, asunto, cuerpo);
         } catch (SQLException e) {
             return false;
         }

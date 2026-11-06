@@ -1,6 +1,6 @@
 /*
  * Autor: Joan Estuardo Rodas
- * Carné: 9490-25-14130
+ * Carné: 94902514130
  */
 package controller;
 
